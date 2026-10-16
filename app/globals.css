@@ -105,3 +105,12 @@
     @apply mb-2 sm:mb-0;
   }
 }
+
+@keyframes progress-fill {
+  from {
+    transform: scaleX(0);
+  }
+  to {
+    transform: scaleX(1);
+  }
+}

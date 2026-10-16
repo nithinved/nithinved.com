@@ -1,15 +1,30 @@
 'use client'
 
-import { useRef, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { ArrowLeft, ArrowRight } from 'lucide-react'
+import { ProgressDots } from './progress-dots'
 import { ProjectMedia } from './project-media'
 import { Scramble } from './scramble'
 import { robots } from '@/lib/content'
-import { cn } from '@/lib/utils'
+
+const SLIDE_MS = 9000
 
 export function Work() {
+  const sectionRef = useRef<HTMLElement>(null)
   const trackRef = useRef<HTMLDivElement>(null)
   const [active, setActive] = useState(0)
+  // Auto-advance pauses only while the carousel is fully off screen, and stops for good once
+  // someone handles a slide's media (drags the model, plays the match) so it never yanks it away.
+  const [visible, setVisible] = useState(false)
+  const [stopped, setStopped] = useState(false)
+
+  useEffect(() => {
+    const section = sectionRef.current
+    if (!section) return
+    const io = new IntersectionObserver(([entry]) => setVisible(entry.isIntersecting))
+    io.observe(section)
+    return () => io.disconnect()
+  }, [])
 
   const goTo = (index: number) => {
     const track = trackRef.current
@@ -35,10 +50,17 @@ export function Work() {
   }
 
   return (
-    <section id="work" aria-roledescription="carousel" aria-label="Robots" className="flex flex-col gap-8">
+    <section
+      ref={sectionRef}
+      id="work"
+      aria-roledescription="carousel"
+      aria-label="Robots"
+      className="flex flex-col gap-8"
+    >
       <div
         ref={trackRef}
         onScroll={handleScroll}
+        onPointerDown={() => setStopped(true)}
         onKeyDown={handleKeyDown}
         tabIndex={0}
         className="flex snap-x snap-mandatory overflow-x-auto overscroll-x-contain outline-none [scrollbar-width:none] focus-visible:ring-1 focus-visible:ring-ring [&::-webkit-scrollbar]:hidden"
@@ -79,22 +101,17 @@ export function Work() {
       </div>
 
       <div className="flex items-center justify-between gap-4">
-        <div className="flex gap-2" role="tablist" aria-label="Choose robot">
-          {robots.map((r, i) => (
-            <button
-              key={r.title}
-              type="button"
-              role="tab"
-              aria-selected={active === i}
-              aria-label={r.title}
-              onClick={() => goTo(i)}
-              className={cn(
-                'h-1 rounded-full transition-all duration-300',
-                active === i ? 'w-8 bg-foreground' : 'w-4 bg-muted-foreground/40 hover:bg-muted-foreground',
-              )}
-            />
-          ))}
-        </div>
+        <ProgressDots
+          count={robots.length}
+          active={active}
+          onSelect={goTo}
+          label="Choose robot"
+          itemLabel={(i) => robots[i].title}
+          duration={stopped ? undefined : SLIDE_MS}
+          progress={1}
+          paused={!visible}
+          onDone={() => goTo(active + 1)}
+        />
         <div className="flex gap-2">
           <button
             type="button"

@@ -3,10 +3,14 @@
 import { useEffect, useRef, useState } from 'react'
 import { ChevronLeft, ChevronRight, Pause, Play } from 'lucide-react'
 import { ModelViewer } from './model-viewer'
+import { ProgressDots } from './progress-dots'
 import { Shot } from './primitives'
 import { withBasePath } from '@/lib/base-path'
 import type { Model, Photo, Video, YouTube } from '@/lib/content'
 import { cn } from '@/lib/utils'
+
+const PHOTO_MS = 4000
+const dotsPill = 'absolute bottom-3 left-3 rounded-full bg-black/40 px-2.5 py-[5px] backdrop-blur-md'
 
 const iconButton =
   'flex size-8 items-center justify-center rounded-full border border-border bg-background/70 text-muted-foreground backdrop-blur-md transition-colors hover:text-foreground'
@@ -151,6 +155,7 @@ function DemoVideo({
   const visibleRef = useRef(false)
   const mountedRef = useRef(false)
   const [playing, setPlaying] = useState(false)
+  const [progress, setProgress] = useState(0)
   const clip = videos[index]
 
   useEffect(() => {
@@ -172,6 +177,7 @@ function DemoVideo({
 
   // Keep playing across a clip change (but not on first mount, which the observer handles).
   useEffect(() => {
+    setProgress(0)
     if (!mountedRef.current) {
       mountedRef.current = true
       return
@@ -181,10 +187,11 @@ function DemoVideo({
   }, [index])
 
   // Picking a clip is a request to watch it, so it also lifts a manual pause.
-  const go = (step: number) => {
+  const pick = (next: number) => {
     heldRef.current = false
-    onIndex((index + step + videos.length) % videos.length)
+    onIndex(next)
   }
+  const go = (step: number) => pick((index + step + videos.length) % videos.length)
 
   const toggle = () => {
     const v = ref.current
@@ -207,13 +214,24 @@ function DemoVideo({
         preload="none"
         onPlay={() => setPlaying(true)}
         onPause={() => setPlaying(false)}
+        onTimeUpdate={(e) => {
+          const v = e.currentTarget
+          if (v.duration) setProgress(v.currentTime / v.duration)
+        }}
         onEnded={() => onIndex((index + 1) % videos.length)}
         className="absolute inset-0 size-full object-cover"
       />
       {videos.length > 1 && (
-        <p className="pointer-events-none absolute bottom-5 left-4 font-mono text-xs text-foreground/80 tabular-nums">
-          {String(index + 1).padStart(2, '0')} / {String(videos.length).padStart(2, '0')}
-        </p>
+        <ProgressDots
+          tone="media"
+          count={videos.length}
+          active={index}
+          onSelect={pick}
+          label="Choose clip"
+          itemLabel={(i) => `Clip ${i + 1} of ${videos.length}`}
+          progress={progress}
+          className={dotsPill}
+        />
       )}
       <div className="absolute right-3 bottom-3 flex gap-2">
         {videos.length > 1 && (
@@ -283,11 +301,22 @@ function Gallery({
   onIndex: (index: number) => void
   priority?: boolean
 }) {
+  const ref = useRef<HTMLDivElement>(null)
+  const [visible, setVisible] = useState(false)
   const photo = photos[index]
   const go = (step: number) => onIndex((index + step + photos.length) % photos.length)
 
+  // Auto-advances only while on screen.
+  useEffect(() => {
+    const el = ref.current
+    if (!el) return
+    const io = new IntersectionObserver(([entry]) => setVisible(entry.isIntersecting))
+    io.observe(el)
+    return () => io.disconnect()
+  }, [])
+
   return (
-    <div className="relative">
+    <div ref={ref} className="relative">
       <Shot
         key={photo.src}
         src={photo.src}
@@ -296,9 +325,18 @@ function Gallery({
         sizes="(min-width: 768px) 55vw, 100vw"
         priority={priority && index === 0}
       />
-      <p className="pointer-events-none absolute bottom-5 left-4 font-mono text-xs text-foreground/80 tabular-nums">
-        {String(index + 1).padStart(2, '0')} / {String(photos.length).padStart(2, '0')}
-      </p>
+      <ProgressDots
+        tone="media"
+        count={photos.length}
+        active={index}
+        onSelect={onIndex}
+        label="Choose photo"
+        itemLabel={(i) => `Photo ${i + 1} of ${photos.length}`}
+        duration={PHOTO_MS}
+        paused={!visible}
+        onDone={() => go(1)}
+        className={dotsPill}
+      />
       <div className="absolute right-3 bottom-3 flex gap-2">
         <button type="button" onClick={() => go(-1)} aria-label="Previous photo" className={iconButton}>
           <ChevronLeft className="size-4" aria-hidden="true" />

@@ -139,7 +139,7 @@ export const projects: Project[] = [
       {
         src: '/work/helmet-parts.mp4',
         poster: '/work/helmet-parts.jpg',
-        caption: 'The electronics, sped up 2.5×: 3D-printed sensor housings, the wiring and the Nano ESP32.',
+        caption: 'Prototype version of the electronics, sped up 2.5×: 3D-printed sensor housings, the wiring and the Nano ESP32.',
       },
     ],
     imageLabel: 'Photo',
