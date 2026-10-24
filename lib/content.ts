@@ -41,7 +41,7 @@ export const robots: Robot[] = [
     src: '/work/cupid-robot.jpg',
     alt: 'Render of Cupid, with its turret shooter, spindexer and roller intake',
     caption: 'Team render of Cupid from the MKII DECODE engineering portfolio.',
-    model: { src: '/models/cupid.glb', caption: 'Cupid’s full CAD assembly, the version that ran at regionals.' },
+    model: { src: '/models/cupid.glb', caption: 'Cupid’s full CAD assembly, the latest revision.' },
     videos: [
       {
         src: '/work/cupid-demo.mp4',
@@ -58,6 +58,10 @@ export const robots: Robot[] = [
     src: '/work/cobra-robot.jpg',
     alt: 'Render of the Cobra, with its arm and claw folded over the drivetrain',
     caption: 'Team render of the Cobra from the Innov8rz engineering portfolio.',
+    model: {
+      src: '/models/cobra-v1.glb',
+      caption: 'CAD of an earlier iteration of the Cobra, not the final competition build.',
+    },
     youtube: {
       id: 'W_z9L4mETQY',
       title: 'MTI 2024 · Finals 2',
@@ -72,6 +76,7 @@ export const robots: Robot[] = [
     src: '/work/purple-emperor-robot.jpg',
     alt: 'Render of Purple Emperor, with its linear-slide outtake and arm',
     caption: 'Team render of Purple Emperor from the MKII INTO THE DEEP engineering portfolio.',
+    model: { src: '/models/purple-emperor.glb', caption: 'Purple Emperor’s full CAD assembly.' },
     videos: [
       {
         src: '/work/purple-emperor-demo-1.mp4',
