@@ -103,7 +103,7 @@ export function ModelViewer({ src, label, className }: { src: string; label: str
       controls.enableDamping = true
       controls.dampingFactor = 0.08
       controls.autoRotate = !matchMedia('(prefers-reduced-motion: reduce)').matches
-      controls.autoRotateSpeed = 2.5 // one turn every ~24 s at 60 fps
+      controls.autoRotateSpeed = 1 // one turn every ~60 s at 60 fps
       controls.screenSpacePanning = true
       controls.cursorStyle = 'grab'
       setSpin(controls.autoRotate)
