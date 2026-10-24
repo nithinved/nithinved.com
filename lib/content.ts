@@ -76,7 +76,7 @@ export const robots: Robot[] = [
     src: '/work/purple-emperor-robot.jpg',
     alt: 'Render of Purple Emperor, with its linear-slide outtake and arm',
     caption: 'Team render of Purple Emperor from the MKII INTO THE DEEP engineering portfolio.',
-    model: { src: '/models/purple-emperor.glb?v=2', caption: 'Purple Emperor’s full CAD assembly.' },
+    model: { src: '/models/purple-emperor.glb?v=3', caption: 'Purple Emperor’s full CAD assembly.' },
     videos: [
       {
         src: '/work/purple-emperor-demo-1.mp4',
