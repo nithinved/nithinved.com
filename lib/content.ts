@@ -43,7 +43,7 @@ export const robots: Robot[] = [
     src: '/work/cupid-robot.jpg',
     alt: 'Render of Cupid, with its turret shooter, spindexer and roller intake',
     caption: 'Team render of Cupid from the MKII DECODE engineering portfolio.',
-    model: { src: '/models/cupid.glb?v=2', caption: 'Cupid’s full CAD assembly, the latest revision.', azimuth: 152 },
+    model: { src: '/models/cupid.glb?v=3', caption: 'Cupid’s full CAD assembly, the latest revision.', azimuth: 152 },
     videos: [
       {
         src: '/work/cupid-demo.mp4',
