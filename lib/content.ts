@@ -6,7 +6,9 @@ import { contactLinks } from './links'
 export type Video = { src: string; poster: string; caption: string }
 export type YouTube = { id: string; title: string; caption: string }
 export type Photo = { src: string; alt: string; caption: string }
-export type Model = { src: string; caption: string }
+// `azimuth` is where the viewer starts, in degrees round from +Z towards +X (default 28): each robot's side
+// panel facing the camera, turned a little towards its front.
+export type Model = { src: string; caption: string; azimuth?: number }
 
 export type Media = {
   src: string
@@ -41,7 +43,7 @@ export const robots: Robot[] = [
     src: '/work/cupid-robot.jpg',
     alt: 'Render of Cupid, with its turret shooter, spindexer and roller intake',
     caption: 'Team render of Cupid from the MKII DECODE engineering portfolio.',
-    model: { src: '/models/cupid.glb?v=2', caption: 'Cupid’s full CAD assembly, the latest revision.' },
+    model: { src: '/models/cupid.glb?v=2', caption: 'Cupid’s full CAD assembly, the latest revision.', azimuth: 14 },
     videos: [
       {
         src: '/work/cupid-demo.mp4',
@@ -55,28 +57,10 @@ export const robots: Robot[] = [
     note: '“No misses, just kisses.” A passive spindexer that indexes artifacts for any motif, a gear-train turret with an adjustable hood, and shooting on the move with OpenCV artifact detection.',
   },
   {
-    src: '/work/cobra-robot.jpg',
-    alt: 'Render of the Cobra, with its arm and claw folded over the drivetrain',
-    caption: 'Team render of the Cobra from the Innov8rz engineering portfolio.',
-    model: {
-      src: '/models/cobra-v1.glb?v=2',
-      caption: 'CAD of an earlier iteration of the Cobra, not the final competition build.',
-    },
-    youtube: {
-      id: 'W_z9L4mETQY',
-      title: 'MTI 2024 · Finals 2',
-      caption: 'Finals Match 2 at the 2024 Maryland Tech Invitational, from the Innov8rz YouTube channel.',
-    },
-    title: 'Cobra',
-    meta: '2023–24',
-    team: 'Innov8rz FTC 11039',
-    note: '“Strike with precision.” Max solo score of 246, with a constant-force-spring drone launcher, a lead-screw hang and a three-joint arm with a smart claw.',
-  },
-  {
     src: '/work/purple-emperor-robot.jpg',
     alt: 'Render of Purple Emperor, with its linear-slide outtake and arm',
     caption: 'Team render of Purple Emperor from the MKII INTO THE DEEP engineering portfolio.',
-    model: { src: '/models/purple-emperor.glb?v=3', caption: 'Purple Emperor’s full CAD assembly.' },
+    model: { src: '/models/purple-emperor.glb?v=3', caption: 'Purple Emperor’s full CAD assembly.', azimuth: 62 },
     videos: [
       {
         src: '/work/purple-emperor-demo-1.mp4',
@@ -93,6 +77,25 @@ export const robots: Robot[] = [
     meta: '2024–25',
     team: 'MKII FTC 26216',
     note: '“Fly like a butterfly, sting like a bee.” Max solo score of 242, first qualifier as winning alliance captain and 3rd Inspire, on an aluminum and polycarbonate drivetrain with three odometry pods.',
+  },
+  {
+    src: '/work/cobra-robot.jpg',
+    alt: 'Render of the Cobra, with its arm and claw folded over the drivetrain',
+    caption: 'Team render of the Cobra from the Innov8rz engineering portfolio.',
+    model: {
+      src: '/models/cobra-v1.glb?v=4',
+      azimuth: -118,
+      caption: 'CAD of an earlier iteration of the Cobra, not the final competition build.',
+    },
+    youtube: {
+      id: 'W_z9L4mETQY',
+      title: 'MTI 2024 · Finals 2',
+      caption: 'Finals Match 2 at the 2024 Maryland Tech Invitational, from the Innov8rz YouTube channel.',
+    },
+    title: 'Cobra',
+    meta: '2023–24',
+    team: 'Innov8rz FTC 11039',
+    note: '“Strike with precision.” Max solo score of 246, with a constant-force-spring drone launcher, a lead-screw hang and a three-joint arm with a smart claw.',
   },
 ]
 

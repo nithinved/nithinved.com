@@ -106,7 +106,12 @@ export function ProjectMedia({
         ) : null}
         {youtube && opened.has('match') ? <YouTubeEmbed video={youtube} className={slot('match')} /> : null}
         {model && opened.has('cad') ? (
-          <ModelViewer src={model.src} label={`Interactive 3D CAD model of ${title}`} className={slot('cad')} />
+          <ModelViewer
+            src={model.src}
+            azimuth={model.azimuth}
+            label={`Interactive 3D CAD model of ${title}`}
+            className={slot('cad')}
+          />
         ) : null}
         {view === 'image' && shot}
         <div

@@ -10,8 +10,12 @@ type Phase = 'idle' | 'loading' | 'ready' | 'error'
 
 type Viewer = {
   reset: () => void
+  restart: () => void
   setSpin: (on: boolean) => void
 }
+
+// The start view: a three-quarter shot, `azimuth` degrees round from +Z towards +X, a little above the model.
+const ELEVATION = 18
 
 // Read a response body into one buffer, reporting progress as it goes.
 async function readAll(res: Response, onProgress: (fraction: number | null) => void) {
@@ -36,7 +40,17 @@ async function readAll(res: Response, onProgress: (fraction: number | null) => v
   return out.buffer
 }
 
-export function ModelViewer({ src, label, className }: { src: string; label: string; className?: string }) {
+export function ModelViewer({
+  src,
+  label,
+  azimuth = 28,
+  className,
+}: {
+  src: string
+  label: string
+  azimuth?: number
+  className?: string
+}) {
   const frameRef = useRef<HTMLDivElement>(null)
   const stageRef = useRef<HTMLDivElement>(null)
   const viewerRef = useRef<Viewer | null>(null)
@@ -156,13 +170,21 @@ export function ModelViewer({ src, label, className }: { src: string; label: str
       }
       document.addEventListener('fullscreenchange', onFullscreen)
 
+      const reset = () => {
+        if (!home) return
+        camera.position.copy(home.pos)
+        controls.target.copy(home.target)
+        controls.update()
+        dirty = true
+      }
       viewerRef.current = {
-        reset: () => {
-          if (!home) return
-          camera.position.copy(home.pos)
-          controls.target.copy(home.target)
-          controls.update()
-          dirty = true
+        reset,
+        // Back to the start view and spinning again (unless motion is reduced), for the next time it's shown.
+        restart: () => {
+          reset()
+          const on = !matchMedia('(prefers-reduced-motion: reduce)').matches
+          controls.autoRotate = on
+          setSpin(on)
         },
         setSpin: (on) => {
           controls.autoRotate = on
@@ -219,8 +241,10 @@ export function ModelViewer({ src, label, className }: { src: string; label: str
 
       const radius = size.length() / 2
       const dist = (radius / Math.sin(THREE.MathUtils.degToRad(camera.fov / 2))) * 0.95
+      const az = THREE.MathUtils.degToRad(azimuth)
+      const el = THREE.MathUtils.degToRad(ELEVATION)
       home = {
-        pos: new THREE.Vector3(1, 0.55, 1.2).normalize().multiplyScalar(dist),
+        pos: new THREE.Vector3(Math.sin(az) * Math.cos(el), Math.sin(el), Math.cos(az) * Math.cos(el)).multiplyScalar(dist),
         target: new THREE.Vector3(),
       }
       camera.near = dist / 200
@@ -245,6 +269,8 @@ export function ModelViewer({ src, label, className }: { src: string; label: str
             if (!disposed) setPhase('error')
           })
         }
+        // Once a slide is fully off screen, put it back to the start view so it opens the same way next time.
+        if (!visible && started) viewerRef.current?.restart()
         setLoop(visible)
       },
       { rootMargin: '200px' },
@@ -257,7 +283,7 @@ export function ModelViewer({ src, label, className }: { src: string; label: str
       frame.removeEventListener('wheel', onWheel, { capture: true })
       teardown()
     }
-  }, [src])
+  }, [src, azimuth])
 
   const toggleFullscreen = () => {
     const frame = frameRef.current

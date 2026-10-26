@@ -8,10 +8,14 @@ import { Scramble } from './scramble'
 import { robots } from '@/lib/content'
 
 const SLIDE_MS = 9000
+const SCROLL_MS = 1100
+
+const easeInOut = (t: number) => (t < 0.5 ? 4 * t * t * t : 1 - (-2 * t + 2) ** 3 / 2)
 
 export function Work() {
   const sectionRef = useRef<HTMLElement>(null)
   const trackRef = useRef<HTMLDivElement>(null)
+  const frameRef = useRef(0)
   const [active, setActive] = useState(0)
   // Auto-advance pauses only while the carousel is fully off screen, and stops for good once
   // someone handles a slide's media (drags the model, plays the match) so it never yanks it away.
@@ -26,11 +30,35 @@ export function Work() {
     return () => io.disconnect()
   }, [])
 
+  // Browsers' own smooth scroll is short and can't be tuned, so animate it here. Scroll snapping is switched
+  // off while it runs (it would pull each frame back to the nearest slide) and restored at the end.
+  const cancelScroll = () => {
+    cancelAnimationFrame(frameRef.current)
+    if (trackRef.current) trackRef.current.style.scrollSnapType = ''
+  }
+
+  useEffect(() => () => cancelAnimationFrame(frameRef.current), [])
+
   const goTo = (index: number) => {
     const track = trackRef.current
     if (!track) return
     const next = (index + robots.length) % robots.length
-    track.scrollTo({ left: next * track.clientWidth, behavior: 'smooth' })
+    const to = next * track.clientWidth
+    cancelScroll()
+    if (matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      track.scrollTo({ left: to })
+      return
+    }
+    const from = track.scrollLeft
+    const began = performance.now()
+    track.style.scrollSnapType = 'none'
+    const step = (now: number) => {
+      const t = Math.min((now - began) / SCROLL_MS, 1)
+      track.scrollLeft = from + (to - from) * easeInOut(t)
+      if (t < 1) frameRef.current = requestAnimationFrame(step)
+      else track.style.scrollSnapType = ''
+    }
+    frameRef.current = requestAnimationFrame(step)
   }
 
   const handleScroll = () => {
@@ -60,7 +88,11 @@ export function Work() {
       <div
         ref={trackRef}
         onScroll={handleScroll}
-        onPointerDown={() => setStopped(true)}
+        onPointerDown={() => {
+          cancelScroll()
+          setStopped(true)
+        }}
+        onWheel={(e) => Math.abs(e.deltaX) > Math.abs(e.deltaY) && cancelScroll()}
         onKeyDown={handleKeyDown}
         tabIndex={0}
         className="flex snap-x snap-mandatory overflow-x-auto overscroll-x-contain outline-none [scrollbar-width:none] focus-visible:ring-1 focus-visible:ring-ring [&::-webkit-scrollbar]:hidden"
