@@ -43,7 +43,7 @@ export const robots: Robot[] = [
     src: '/work/cupid-robot.jpg',
     alt: 'Render of Cupid, with its turret shooter, spindexer and roller intake',
     caption: 'Team render of Cupid from the MKII DECODE engineering portfolio.',
-    model: { src: '/models/cupid.glb?v=2', caption: 'Cupid’s full CAD assembly, the latest revision.', azimuth: 14 },
+    model: { src: '/models/cupid.glb?v=2', caption: 'Cupid’s full CAD assembly, the latest revision.', azimuth: 152 },
     videos: [
       {
         src: '/work/cupid-demo.mp4',
@@ -83,7 +83,7 @@ export const robots: Robot[] = [
     alt: 'Render of the Cobra, with its arm and claw folded over the drivetrain',
     caption: 'Team render of the Cobra from the Innov8rz engineering portfolio.',
     model: {
-      src: '/models/cobra-v1.glb?v=5',
+      src: '/models/cobra-v1.glb?v=6',
       azimuth: -118,
       caption: 'CAD of an earlier iteration of the Cobra, not the final competition build.',
     },
