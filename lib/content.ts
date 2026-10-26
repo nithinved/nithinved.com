@@ -83,7 +83,7 @@ export const robots: Robot[] = [
     alt: 'Render of the Cobra, with its arm and claw folded over the drivetrain',
     caption: 'Team render of the Cobra from the Innov8rz engineering portfolio.',
     model: {
-      src: '/models/cobra-v1.glb?v=4',
+      src: '/models/cobra-v1.glb?v=5',
       azimuth: -118,
       caption: 'CAD of an earlier iteration of the Cobra, not the final competition build.',
     },
