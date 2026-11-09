@@ -1,0 +1,163 @@
+'use client'
+
+import { Children, useEffect, useRef, useState } from 'react'
+import { ArrowLeft, ArrowRight } from 'lucide-react'
+import { ProgressDots } from './progress-dots'
+
+const SCROLL_MS = 1100
+
+const easeInOut = (t: number) => (t < 0.5 ? 4 * t * t * t : 1 - (-2 * t + 2) ** 3 / 2)
+
+// A row of full-width slides that snap, with progress dashes and arrows underneath. It moves on by itself
+// every `slideMs` while it's on screen, and stops for good once someone handles a slide's media (drags the
+// model, plays a match) so it never yanks it away.
+export function Carousel({
+  id,
+  label,
+  slideLabels,
+  slideMs,
+  dotsLabel,
+  previousLabel,
+  nextLabel,
+  children,
+}: {
+  id?: string
+  label: string
+  slideLabels: string[]
+  slideMs: number
+  dotsLabel: string
+  previousLabel: string
+  nextLabel: string
+  children: React.ReactNode
+}) {
+  const rootRef = useRef<HTMLDivElement>(null)
+  const trackRef = useRef<HTMLDivElement>(null)
+  const frameRef = useRef(0)
+  const [active, setActive] = useState(0)
+  // Auto-advance pauses only while the carousel is fully off screen.
+  const [visible, setVisible] = useState(false)
+  const [stopped, setStopped] = useState(false)
+  const slides = Children.toArray(children)
+
+  useEffect(() => {
+    const root = rootRef.current
+    if (!root) return
+    const io = new IntersectionObserver(([entry]) => setVisible(entry.isIntersecting))
+    io.observe(root)
+    return () => io.disconnect()
+  }, [])
+
+  // Browsers' own smooth scroll is short and can't be tuned, so animate it here. Scroll snapping is switched
+  // off while it runs (it would pull each frame back to the nearest slide) and restored at the end.
+  const cancelScroll = () => {
+    cancelAnimationFrame(frameRef.current)
+    if (trackRef.current) trackRef.current.style.scrollSnapType = ''
+  }
+
+  useEffect(() => () => cancelAnimationFrame(frameRef.current), [])
+
+  const goTo = (index: number) => {
+    const track = trackRef.current
+    if (!track) return
+    const next = (index + slides.length) % slides.length
+    const to = next * track.clientWidth
+    cancelScroll()
+    if (matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      track.scrollTo({ left: to })
+      return
+    }
+    const from = track.scrollLeft
+    const began = performance.now()
+    track.style.scrollSnapType = 'none'
+    const step = (now: number) => {
+      const t = Math.min((now - began) / SCROLL_MS, 1)
+      track.scrollLeft = from + (to - from) * easeInOut(t)
+      if (t < 1) frameRef.current = requestAnimationFrame(step)
+      else track.style.scrollSnapType = ''
+    }
+    frameRef.current = requestAnimationFrame(step)
+  }
+
+  const handleScroll = () => {
+    const track = trackRef.current
+    if (!track) return
+    setActive(Math.round(track.scrollLeft / track.clientWidth))
+  }
+
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === 'ArrowRight') {
+      e.preventDefault()
+      goTo(active + 1)
+    } else if (e.key === 'ArrowLeft') {
+      e.preventDefault()
+      goTo(active - 1)
+    }
+  }
+
+  return (
+    <div
+      ref={rootRef}
+      id={id}
+      role="group"
+      aria-roledescription="carousel"
+      aria-label={label}
+      className="flex flex-col gap-8"
+    >
+      <div
+        ref={trackRef}
+        onScroll={handleScroll}
+        onPointerDown={() => {
+          cancelScroll()
+          setStopped(true)
+        }}
+        onWheel={(e) => Math.abs(e.deltaX) > Math.abs(e.deltaY) && cancelScroll()}
+        onKeyDown={handleKeyDown}
+        tabIndex={0}
+        className="flex snap-x snap-mandatory overflow-x-auto overscroll-x-contain outline-none [scrollbar-width:none] focus-visible:ring-1 focus-visible:ring-ring [&::-webkit-scrollbar]:hidden"
+      >
+        {slides.map((slide, i) => (
+          <article
+            key={i}
+            aria-roledescription="slide"
+            aria-label={`${i + 1} of ${slides.length}: ${slideLabels[i]}`}
+            className="flex w-full shrink-0 snap-start"
+          >
+            {slide}
+          </article>
+        ))}
+      </div>
+
+      <div className="flex items-center justify-between gap-4">
+        <ProgressDots
+          count={slides.length}
+          active={active}
+          onSelect={goTo}
+          label={dotsLabel}
+          itemLabel={(i) => slideLabels[i]}
+          duration={stopped ? undefined : slideMs}
+          progress={1}
+          paused={!visible}
+          onDone={() => goTo(active + 1)}
+        />
+        <div className="flex gap-2">
+          <button
+            type="button"
+            onClick={() => goTo(active - 1)}
+            aria-label={previousLabel}
+            className="flex size-10 items-center justify-center rounded-full border border-border text-muted-foreground transition-colors hover:text-foreground"
+          >
+            <ArrowLeft className="size-4" aria-hidden="true" />
+          </button>
+          <button
+            type="button"
+            onClick={() => goTo(active + 1)}
+            aria-label={nextLabel}
+            className="flex size-10 items-center justify-center rounded-full border border-border text-muted-foreground transition-colors hover:text-foreground"
+          >
+            <ArrowRight className="size-4" aria-hidden="true" />
+          </button>
+        </div>
+      </div>
+    </div>
+  )
+}

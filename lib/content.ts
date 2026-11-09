@@ -9,7 +9,9 @@ export type Photo = { src: string; alt: string; caption: string }
 // `azimuth` is where the viewer starts, in degrees round from +Z towards +X (default 28): each robot's side
 // panel facing the camera, turned a little towards its front.
 // `elevation` is how far above the model it starts, in degrees (default 18); flat models read better from higher up.
-export type Model = { src: string; caption: string; azimuth?: number; elevation?: number }
+// `center` is the point (x, z, in metres in the file) the model sits and spins on, for when the middle of its
+// bounding box isn't the middle of the robot (default: the box's middle).
+export type Model = { src: string; caption: string; azimuth?: number; elevation?: number; center?: readonly [number, number] }
 
 export type Media = {
   src: string
@@ -39,13 +41,15 @@ export const site = {
   span: 'Selected work 2023–2026',
 }
 
-// The featured project at the top of the page: a short explanation, how it works step by step, and key facts.
+// The featured project at the top of the page, as three slides: the CAD, how it works, and what it's made of.
 export type Latest = {
   title: string
   meta: string
   lead: string
+  howLead: string
   steps: readonly (readonly [string, string])[]
-  facts: readonly (readonly [string, string])[]
+  materialsLead: string
+  facts: readonly { value: string; label: string; note: string }[]
   model: Model
 }
 
@@ -53,6 +57,7 @@ export const latest: Latest = {
   title: 'Differential swerve drive',
   meta: 'Three pods · two motors each',
   lead: 'A drivetrain that can point and drive in any direction. Each of its three pods steers and drives with the same two motors.',
+  howLead: 'Every pod does both jobs, driving its wheel and steering it, with the same two motors.',
   steps: [
     ['Together', 'Both motors spin the same way and the pod turns, pointing its wheel in any direction.'],
     ['Against each other', 'The motors spin opposite ways and the wheel rolls.'],
@@ -61,17 +66,24 @@ export const latest: Latest = {
       'Mix the two and the robot drives in any direction while it turns. Both motors always share the load, so neither sits idle during a straight drive.',
     ],
   ],
+  materialsLead: 'What each pod is made of.',
   facts: [
-    ['Pods', 'Three, bolted rigidly to the chassis'],
-    ['Motors', 'Two per pod, both coupled to one wheel'],
-    ['Wheel', '76.2 mm (3 in) urethane'],
-    ['Gears', 'Custom 3D-printed crown and herringbone gears in carbon-fiber nylon, which keeps each pod light'],
-    ['Steering ring', 'Rides on eight small V-groove bearings'],
+    { value: '3', label: 'Pods', note: 'Bolted rigidly to the chassis' },
+    { value: '2', label: 'Motors per pod', note: 'Both coupled to one wheel' },
+    { value: '76.2 mm', label: 'Urethane wheel', note: 'Three inches across' },
+    {
+      value: 'Carbon-fiber nylon',
+      label: 'Printed gears',
+      note: 'Custom crown and herringbone gears, 3D-printed. The material keeps each pod light',
+    },
+    { value: '8', label: 'V-groove bearings per pod', note: 'Small bearings that carry the pod’s steering ring' },
   ],
   model: {
     src: '/models/swerve-drive.glb?v=1',
     caption: 'CAD of the full drivetrain: three pods on the chassis.',
     elevation: 32,
+    // The middle of the three wheels: 30 mm off from the middle of the model's bounding box.
+    center: [-0.105, -0.0606],
   },
 }
 

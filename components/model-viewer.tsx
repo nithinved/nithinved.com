@@ -44,12 +44,14 @@ export function ModelViewer({
   label,
   azimuth = 28,
   elevation = 18,
+  center,
   className,
 }: {
   src: string
   label: string
   azimuth?: number
   elevation?: number
+  center?: readonly [number, number]
   className?: string
 }) {
   const frameRef = useRef<HTMLDivElement>(null)
@@ -234,13 +236,26 @@ export function ModelViewer({
         m.needsUpdate = true
       })
 
-      // Center the model and frame the camera to its size.
+      // Center the model and frame the camera to its size. With `center` (x, z in the model's own units) it sits
+      // and turns about that point instead of the middle of its bounding box, which suits a triangular robot.
       const box = new THREE.Box3().setFromObject(model)
       const size = box.getSize(new THREE.Vector3())
-      model.position.sub(box.getCenter(new THREE.Vector3()))
+      const middle = box.getCenter(new THREE.Vector3())
+      model.position.sub(center ? new THREE.Vector3(center[0], middle.y, center[1]) : middle)
       scene.add(model)
 
-      const radius = size.length() / 2
+      // Around a custom pivot the box is lopsided, so frame the farthest part of the model instead.
+      let radius = size.length() / 2
+      if (center) {
+        model.updateMatrixWorld(true)
+        radius = 0
+        model.traverse((o) => {
+          if (!(o instanceof THREE.Mesh)) return
+          o.geometry.computeBoundingSphere()
+          const s = o.geometry.boundingSphere!.clone().applyMatrix4(o.matrixWorld)
+          radius = Math.max(radius, s.center.length() + s.radius)
+        })
+      }
       const dist = (radius / Math.sin(THREE.MathUtils.degToRad(camera.fov / 2))) * 0.95
       const az = THREE.MathUtils.degToRad(azimuth)
       const el = THREE.MathUtils.degToRad(elevation)
@@ -284,7 +299,7 @@ export function ModelViewer({
       frame.removeEventListener('wheel', onWheel, { capture: true })
       teardown()
     }
-  }, [src, azimuth, elevation])
+  }, [src, azimuth, elevation, center])
 
   const toggleFullscreen = () => {
     const frame = frameRef.current

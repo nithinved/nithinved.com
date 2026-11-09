@@ -85,7 +85,8 @@ export default function AgentPage() {
           {latest.title} ({latest.meta})
         </h3>
         <p>{latest.lead}</p>
-        <p>How a pod works:</p>
+        <p>On the page this is three slides: the CAD, how it works, and materials.</p>
+        <p>How a pod works. {latest.howLead}</p>
         <ol>
           {latest.steps.map(([name, text]) => (
             <li key={name}>
@@ -93,11 +94,11 @@ export default function AgentPage() {
             </li>
           ))}
         </ol>
-        <p>Build:</p>
+        <p>Materials and parts. {latest.materialsLead}</p>
         <ul>
-          {latest.facts.map(([term, value]) => (
-            <li key={term}>
-              {term}: {value}
+          {latest.facts.map((f) => (
+            <li key={f.label}>
+              {f.label}: {f.value}. {f.note}.
             </li>
           ))}
           <li>
