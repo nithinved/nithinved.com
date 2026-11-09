@@ -1,4 +1,5 @@
 import { Hero } from '@/components/hero'
+import { Latest } from '@/components/latest'
 import { Work } from '@/components/work'
 import { Projects } from '@/components/projects'
 import { About } from '@/components/about'
@@ -10,6 +11,7 @@ export default function Page() {
     <ViewSwitch>
       <main className="mx-auto max-w-7xl px-5 md:px-8">
         <Hero />
+        <Latest />
         <Work />
         <Projects />
         <About />

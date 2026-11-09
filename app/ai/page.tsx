@@ -1,7 +1,7 @@
 import type { Metadata } from 'next'
 import { agentPaths, recruiterNote, summary } from '@/lib/agent-text'
 import { withBasePath } from '@/lib/base-path'
-import { about, contact, isProfileLink, projects, robots, site, type Media } from '@/lib/content'
+import { about, contact, isProfileLink, latest, projects, robots, site, type Media } from '@/lib/content'
 
 // The page as plain HTML for AI agents: no carousels, no 3D viewers, no animation, every caption written out.
 
@@ -78,6 +78,33 @@ export default function AgentPage() {
       <p>
         Contact: <a href={`mailto:${contact.email}`}>{contact.email}</a>
       </p>
+
+      <h2>Latest project</h2>
+      <section>
+        <h3>
+          {latest.title} ({latest.meta})
+        </h3>
+        <p>{latest.lead}</p>
+        <p>How a pod works:</p>
+        <ol>
+          {latest.steps.map(([name, text]) => (
+            <li key={name}>
+              {name}: {text}
+            </li>
+          ))}
+        </ol>
+        <p>Build:</p>
+        <ul>
+          {latest.facts.map(([term, value]) => (
+            <li key={term}>
+              {term}: {value}
+            </li>
+          ))}
+          <li>
+            <a href={withBasePath(latest.model.src)}>3D CAD model (glTF)</a>: {latest.model.caption}
+          </li>
+        </ul>
+      </section>
 
       <h2>Robots</h2>
       <p>FIRST Tech Challenge competition robots, newest first.</p>

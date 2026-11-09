@@ -8,7 +8,8 @@ export type YouTube = { id: string; title: string; caption: string }
 export type Photo = { src: string; alt: string; caption: string }
 // `azimuth` is where the viewer starts, in degrees round from +Z towards +X (default 28): each robot's side
 // panel facing the camera, turned a little towards its front.
-export type Model = { src: string; caption: string; azimuth?: number }
+// `elevation` is how far above the model it starts, in degrees (default 18); flat models read better from higher up.
+export type Model = { src: string; caption: string; azimuth?: number; elevation?: number }
 
 export type Media = {
   src: string
@@ -36,6 +37,42 @@ export const site = {
   heading: 'Portfolio',
   subline: 'Robotics Engineering, UC Santa Cruz',
   span: 'Selected work 2023–2026',
+}
+
+// The featured project at the top of the page: a short explanation, how it works step by step, and key facts.
+export type Latest = {
+  title: string
+  meta: string
+  lead: string
+  steps: readonly (readonly [string, string])[]
+  facts: readonly (readonly [string, string])[]
+  model: Model
+}
+
+export const latest: Latest = {
+  title: 'Differential swerve drive',
+  meta: 'Three pods · two motors each',
+  lead: 'A drivetrain that can point and drive in any direction. Each of its three pods steers and drives with the same two motors.',
+  steps: [
+    ['Together', 'Both motors spin the same way and the pod turns, pointing its wheel in any direction.'],
+    ['Against each other', 'The motors spin opposite ways and the wheel rolls.'],
+    [
+      'Blended',
+      'Mix the two and the robot drives in any direction while it turns. Both motors always share the load, so neither sits idle during a straight drive.',
+    ],
+  ],
+  facts: [
+    ['Pods', 'Three, bolted rigidly to the chassis'],
+    ['Motors', 'Two per pod, both coupled to one wheel'],
+    ['Wheel', '76.2 mm (3 in) urethane'],
+    ['Gears', 'Custom 3D-printed crown and herringbone gears in carbon-fiber nylon, which keeps each pod light'],
+    ['Steering ring', 'Rides on eight small V-groove bearings'],
+  ],
+  model: {
+    src: '/models/swerve-drive.glb?v=1',
+    caption: 'CAD of the full drivetrain: three pods on the chassis.',
+    elevation: 32,
+  },
 }
 
 export const robots: Robot[] = [

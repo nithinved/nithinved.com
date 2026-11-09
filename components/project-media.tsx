@@ -109,6 +109,7 @@ export function ProjectMedia({
           <ModelViewer
             src={model.src}
             azimuth={model.azimuth}
+            elevation={model.elevation}
             label={`Interactive 3D CAD model of ${title}`}
             className={slot('cad')}
           />

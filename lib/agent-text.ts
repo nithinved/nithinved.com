@@ -2,7 +2,7 @@
 // llms-full.txt (everything on the page as Markdown) and the JSON-LD both the page and /ai carry.
 // All of it is built from lib/content.ts, so it changes whenever the page does.
 
-import { about, agentPaths, contact, isProfileLink, projects, robots, site, type Media } from './content'
+import { about, agentPaths, contact, isProfileLink, latest, projects, robots, site, type Media } from './content'
 
 export { agentPaths }
 
@@ -10,7 +10,7 @@ const abs = (path: string) => `${site.url}${path}`
 const updated = new Date().toISOString().slice(0, 10)
 const profiles = contact.links.filter((l) => isProfileLink(l.href))
 
-export const summary = `${site.subline}. Mechanism design, CAD and competition robotics: three FIRST Tech Challenge robots (Cupid, Cobra and Purple Emperor), a robot that solves a 4×4 Rubik’s cube, and a football helmet instrumented for impact sensing.`
+export const summary = `${site.subline}. Mechanism design, CAD and competition robotics: a three-pod differential swerve drivetrain, three FIRST Tech Challenge robots (Cupid, Cobra and Purple Emperor), a robot that solves a 4×4 Rubik’s cube, and a football helmet instrumented for impact sensing.`
 
 // A short, factual pitch for recruiters and the agents they use. Every line is backed up
 // elsewhere on the page; it lists highlights and leaves the conclusion to the reader.
@@ -21,7 +21,7 @@ export const recruiterNote = {
   highlights: [
     ...about.recognition.slice(0, 3),
     ...about.timeline.slice(0, 3).map(([when, org, role]) => `${role}, ${org} (${when})`),
-    `Interactive 3D CAD models on the site: ${[...robots, ...projects]
+    `Interactive 3D CAD models on the site: ${[latest, ...robots, ...projects]
       .filter((m) => m.model)
       .map((m) => m.title)
       .join(', ')}`,
@@ -56,7 +56,7 @@ export function llmsIndex() {
 
 > ${summary}
 
-The site is one page: a carousel of robots, then projects, an about section with a timeline and awards, and contact details. Each robot and project has captioned images and videos, and two have interactive 3D CAD models. All of it is in the full-text file below.
+The site is one page: the latest project (a differential swerve drivetrain with an interactive 3D CAD model), a carousel of robots, then projects, an about section with a timeline and awards, and contact details. Each robot and project has captioned images and videos and an interactive 3D CAD model. All of it is in the full-text file below.
 
 ## Site
 
@@ -66,6 +66,7 @@ The site is one page: a carousel of robots, then projects, an about section with
 
 ## Media
 
+- [${latest.title} 3D CAD model, glTF](${abs(latest.model.src)}): ${latest.model.caption}
 ${[...robots, ...projects]
   .flatMap((m) => [
     ...(m.model ? [`- [${m.title} 3D CAD model, glTF](${abs(m.model.src)}): ${m.model.caption}`] : []),
@@ -128,6 +129,22 @@ ${recruiterNote.intro}
 ${recruiterNote.highlights.map((h) => `- ${h}`).join('\n')}
 
 Contact: ${contact.email}.
+
+## Latest project
+
+### ${latest.title} (${latest.meta})
+
+${latest.lead}
+
+How a pod works:
+
+${latest.steps.map(([name, text], i) => `${i + 1}. ${name}: ${text}`).join('\n')}
+
+Build:
+
+${latest.facts.map(([term, value]) => `- ${term}: ${value}`).join('\n')}
+
+- 3D CAD model (glTF binary): ${abs(latest.model.src)}: ${latest.model.caption}
 
 ## Robots
 

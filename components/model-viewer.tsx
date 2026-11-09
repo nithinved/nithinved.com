@@ -14,8 +14,7 @@ type Viewer = {
   setSpin: (on: boolean) => void
 }
 
-// The start view: a three-quarter shot, `azimuth` degrees round from +Z towards +X, a little above the model.
-const ELEVATION = 18
+// The start view: a three-quarter shot, `azimuth` degrees round from +Z towards +X, `elevation` degrees above the model.
 
 // Read a response body into one buffer, reporting progress as it goes.
 async function readAll(res: Response, onProgress: (fraction: number | null) => void) {
@@ -44,11 +43,13 @@ export function ModelViewer({
   src,
   label,
   azimuth = 28,
+  elevation = 18,
   className,
 }: {
   src: string
   label: string
   azimuth?: number
+  elevation?: number
   className?: string
 }) {
   const frameRef = useRef<HTMLDivElement>(null)
@@ -242,7 +243,7 @@ export function ModelViewer({
       const radius = size.length() / 2
       const dist = (radius / Math.sin(THREE.MathUtils.degToRad(camera.fov / 2))) * 0.95
       const az = THREE.MathUtils.degToRad(azimuth)
-      const el = THREE.MathUtils.degToRad(ELEVATION)
+      const el = THREE.MathUtils.degToRad(elevation)
       home = {
         pos: new THREE.Vector3(Math.sin(az) * Math.cos(el), Math.sin(el), Math.cos(az) * Math.cos(el)).multiplyScalar(dist),
         target: new THREE.Vector3(),
@@ -283,7 +284,7 @@ export function ModelViewer({
       frame.removeEventListener('wheel', onWheel, { capture: true })
       teardown()
     }
-  }, [src, azimuth])
+  }, [src, azimuth, elevation])
 
   const toggleFullscreen = () => {
     const frame = frameRef.current
