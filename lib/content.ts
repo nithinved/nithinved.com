@@ -11,7 +11,15 @@ export type Photo = { src: string; alt: string; caption: string }
 // `elevation` is how far above the model it starts, in degrees (default 18); flat models read better from higher up.
 // `center` is the point (x, z, in metres in the file) the model sits and spins on, for when the middle of its
 // bounding box isn't the middle of the robot (default: the box's middle).
-export type Model = { src: string; caption: string; azimuth?: number; elevation?: number; center?: readonly [number, number] }
+export type Model = {
+  src: string
+  caption: string
+  azimuth?: number
+  elevation?: number
+  center?: readonly [number, number]
+  // Tone-mapping exposure; lower keeps light colours from washing out to white. Defaults to 0.6.
+  exposure?: number
+}
 
 export type Media = {
   src: string
@@ -79,11 +87,13 @@ export const latest: Latest = {
     { value: '8', label: 'V-groove bearings per pod', note: 'Small bearings that carry the pod’s steering ring' },
   ],
   model: {
-    src: '/models/swerve-drive.glb?v=1',
+    src: '/models/swerve-drive.glb?v=5',
     caption: 'CAD of the full drivetrain: three pods on the chassis.',
     elevation: 32,
     // The middle of the three wheels: 30 mm off from the middle of the model's bounding box.
     center: [-0.105, -0.0606],
+    // Darker than the robots so the taupe plates and red wheels read as they do in Fusion.
+    exposure: 0.35,
   },
 }
 

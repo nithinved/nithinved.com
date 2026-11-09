@@ -45,6 +45,7 @@ export function ModelViewer({
   azimuth = 28,
   elevation = 18,
   center,
+  exposure = 0.6,
   className,
 }: {
   src: string
@@ -52,6 +53,7 @@ export function ModelViewer({
   azimuth?: number
   elevation?: number
   center?: readonly [number, number]
+  exposure?: number
   className?: string
 }) {
   const frameRef = useRef<HTMLDivElement>(null)
@@ -98,7 +100,7 @@ export function ModelViewer({
       renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
       renderer.setClearColor(0x000000, 0)
       renderer.toneMapping = THREE.ACESFilmicToneMapping
-      renderer.toneMappingExposure = 0.6
+      renderer.toneMappingExposure = exposure
       renderer.domElement.className = 'block size-full outline-none'
       stage.appendChild(renderer.domElement)
 
@@ -299,7 +301,7 @@ export function ModelViewer({
       frame.removeEventListener('wheel', onWheel, { capture: true })
       teardown()
     }
-  }, [src, azimuth, elevation, center])
+  }, [src, azimuth, elevation, center, exposure])
 
   const toggleFullscreen = () => {
     const frame = frameRef.current

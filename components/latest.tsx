@@ -68,6 +68,7 @@ export function Latest() {
               azimuth={latest.model.azimuth}
               elevation={latest.model.elevation}
               center={latest.model.center}
+              exposure={latest.model.exposure}
               label={`Interactive 3D CAD model of the ${latest.title.toLowerCase()}`}
               className="aspect-square"
             />
