@@ -136,15 +136,15 @@ Contact: ${contact.email}.
 
 ${latest.lead}
 
-On the page this is three slides: the CAD, how it works, and materials.
+On the page this is three slides: the CAD, how it works, and projected performance.
 
 How a pod works. ${latest.howLead}
 
 ${latest.steps.map(([name, text], i) => `${i + 1}. ${name}: ${text}`).join('\n')}
 
-Materials and parts. ${latest.materialsLead}
+Projected performance. ${latest.statsLead}
 
-${latest.facts.map((f) => `- ${f.label}: ${f.value}. ${f.note}.`).join('\n')}
+${latest.stats.map((f) => `- ${f.label}: ${f.value}. ${f.note}.`).join('\n')}
 
 - 3D CAD model (glTF binary): ${abs(latest.model.src)}: ${latest.model.caption}
 

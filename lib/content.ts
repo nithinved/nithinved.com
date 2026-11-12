@@ -49,15 +49,15 @@ export const site = {
   span: 'Selected work 2023–2026',
 }
 
-// The featured project at the top of the page, as three slides: the CAD, how it works, and what it's made of.
+// The featured project at the top of the page, as three slides: the CAD, how it works, and how it should perform.
 export type Latest = {
   title: string
   meta: string
   lead: string
   howLead: string
   steps: readonly (readonly [string, string])[]
-  materialsLead: string
-  facts: readonly { value: string; label: string; note: string }[]
+  statsLead: string
+  stats: readonly { value: string; label: string; note: string }[]
   model: Model
 }
 
@@ -74,17 +74,31 @@ export const latest: Latest = {
       'Mix the two and the robot drives in any direction while it turns. Both motors always share the load, so neither sits idle during a straight drive.',
     ],
   ],
-  materialsLead: 'What each pod is made of.',
-  facts: [
-    { value: '3', label: 'Pods', note: 'Bolted rigidly to the chassis' },
-    { value: '2', label: 'Motors per pod', note: 'Both coupled to one wheel' },
-    { value: '76.2 mm', label: 'Urethane wheel', note: 'Three inches across' },
+  statsLead: 'Projections from the CAD, the parts list and the motor specs, until it’s built and tested.',
+  stats: [
     {
-      value: 'Carbon-fiber nylon',
-      label: 'Printed gears',
-      note: 'Custom crown and herringbone gears, 3D-printed. The material keeps each pod light',
+      value: '8–10 lb',
+      label: 'Weight, drivetrain only',
+      note: '3.5–4.5 kg. Estimated from the CAD and parts list, with the 6S battery, Pi and wiring included',
     },
-    { value: '8', label: 'V-groove bearings per pod', note: 'Small bearings that carry the pod’s steering ring' },
+    {
+      value: '39 mph',
+      label: 'Top speed, theoretical',
+      note: '17.4 m/s. 380 KV at 22.2 V is about 8,400 rpm, geared down 1.93:1 onto a 76.2 mm wheel',
+    },
+    { value: '30 mph', label: 'Top speed, projected', note: 'About 85% of theoretical, after voltage sag and gear losses' },
+    {
+      value: '105 N',
+      label: 'Force at the wheels',
+      note: 'About 35 N per pod at 16 A per motor, with both motors in each pod pulling',
+    },
+    { value: '2.3 g', label: 'Motor-limited acceleration', note: 'About 90 N after losses, on a 4 kg robot' },
+    {
+      value: '0.8 g',
+      label: 'Traction-limited acceleration',
+      note: '0.6–1.0 g for urethane on hardwood or carpet. All three wheels are driven',
+    },
+    { value: '0.85 s', label: '0 to 15 mph', note: 'Over about 9 ft, at 0.8 g' },
   ],
   model: {
     src: '/models/swerve-drive.glb?v=5',

@@ -94,9 +94,9 @@ export default function AgentPage() {
             </li>
           ))}
         </ol>
-        <p>Materials and parts. {latest.materialsLead}</p>
+        <p>Projected performance. {latest.statsLead}</p>
         <ul>
-          {latest.facts.map((f) => (
+          {latest.stats.map((f) => (
             <li key={f.label}>
               {f.label}: {f.value}. {f.note}.
             </li>

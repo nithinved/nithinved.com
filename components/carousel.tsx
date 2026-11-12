@@ -48,10 +48,17 @@ export function Carousel({
   }, [])
 
   // Browsers' own smooth scroll is short and can't be tuned, so animate it here. Scroll snapping is switched
-  // off while it runs (it would pull each frame back to the nearest slide) and restored at the end.
+  // off while it runs (it would pull each frame back to the nearest slide) and restored at the end. While it
+  // runs the track carries `data-sliding`, which tells heavy slide content (the 3D viewer) to stop drawing.
+  const endScroll = () => {
+    const track = trackRef.current
+    if (!track) return
+    track.style.scrollSnapType = ''
+    delete track.dataset.sliding
+  }
   const cancelScroll = () => {
     cancelAnimationFrame(frameRef.current)
-    if (trackRef.current) trackRef.current.style.scrollSnapType = ''
+    endScroll()
   }
 
   useEffect(() => () => cancelAnimationFrame(frameRef.current), [])
@@ -69,11 +76,12 @@ export function Carousel({
     const from = track.scrollLeft
     const began = performance.now()
     track.style.scrollSnapType = 'none'
+    track.dataset.sliding = ''
     const step = (now: number) => {
       const t = Math.min((now - began) / SCROLL_MS, 1)
       track.scrollLeft = from + (to - from) * easeInOut(t)
       if (t < 1) frameRef.current = requestAnimationFrame(step)
-      else track.style.scrollSnapType = ''
+      else endScroll()
     }
     frameRef.current = requestAnimationFrame(step)
   }

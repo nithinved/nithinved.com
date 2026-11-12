@@ -5,7 +5,7 @@ import { Scramble } from './scramble'
 import { latest } from '@/lib/content'
 
 const SLIDE_MS = 9000
-const slides = ['CAD', 'How it works', 'Materials']
+const slides = ['CAD', 'How it works', 'Performance']
 
 // A pod seen from above: the ring, the wheel, and the arrows for what the motors are doing.
 // `turn` spins the whole pod, `roll` rolls the wheel; both together is the blend.
@@ -97,18 +97,18 @@ export function Latest() {
           </ol>
         </div>
 
-        {/* 3. Materials */}
+        {/* 3. Projected performance */}
         <div className="grid w-full items-center gap-8 md:grid-cols-[5fr_6fr] md:gap-16">
           <div className="flex flex-col gap-4">
-            <span className="font-mono text-xs text-muted-foreground">03 / 03 · Materials</span>
-            <h3 className="text-balance text-4xl font-medium tracking-tight md:text-6xl">Materials and parts</h3>
-            <p className="max-w-sm text-pretty leading-relaxed text-muted-foreground">{latest.materialsLead}</p>
+            <span className="font-mono text-xs text-muted-foreground">03 / 03 · Performance</span>
+            <h3 className="text-balance text-4xl font-medium tracking-tight md:text-6xl">Projected performance</h3>
+            <p className="max-w-sm text-pretty leading-relaxed text-muted-foreground">{latest.statsLead}</p>
           </div>
           <dl className="grid gap-px overflow-hidden rounded-sm border bg-border sm:grid-cols-2">
-            {latest.facts.map((f, i) => (
+            {latest.stats.map((f, i) => (
               <div
                 key={f.label}
-                className={`flex flex-col gap-1 bg-background p-5 ${i === latest.facts.length - 1 && latest.facts.length % 2 ? 'sm:col-span-2' : ''}`}
+                className={`flex flex-col gap-1 bg-background p-5 ${i === latest.stats.length - 1 && latest.stats.length % 2 ? 'sm:col-span-2' : ''}`}
               >
                 <dt className="order-2 font-mono text-xs text-muted-foreground">{f.label}</dt>
                 <dd className="order-1 text-balance text-2xl font-medium tracking-tight md:text-3xl">{f.value}</dd>

@@ -97,7 +97,8 @@ export function ModelViewer({
       if (disposed || !stage) return
 
       const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true })
-      renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2))
+      // Phones have 3× screens and small GPUs: 1.5× is still sharp and much cheaper to draw.
+      renderer.setPixelRatio(Math.min(window.devicePixelRatio, matchMedia('(pointer: coarse)').matches ? 1.5 : 2))
       renderer.setClearColor(0x000000, 0)
       renderer.toneMapping = THREE.ACESFilmicToneMapping
       renderer.toneMappingExposure = exposure
@@ -155,11 +156,13 @@ export function ModelViewer({
       ro.observe(stage)
       resize()
 
-      // Only draw while on screen, and only when the view actually changed.
+      // Only draw while on screen, and only when the view actually changed. Hold still while a carousel slides
+      // past: on a phone, drawing the model every frame starves the slide animation and it jumps instead.
       setLoop = (on) =>
         renderer.setAnimationLoop(
           on
             ? () => {
+                if (stage.closest('[data-sliding]')) return
                 if (controls.update() || dirty) {
                   renderer.render(scene, camera)
                   dirty = false
